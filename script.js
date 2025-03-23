@@ -3,20 +3,48 @@ const buttonStartTimerCycle = document.getElementById('btn-timer-cycle');
 const buttonResetEconomics = document.getElementById('btn-reset-economics')
 const buttonShowAllPeople = document.getElementById('btn-show-all-people');
 const buttonShowAllBusinesses = document.getElementById('btn-show-all-businesses');
+let moneyValuesX = [];
+let moneyValueY = [];
+
+let moneyChart = new Chart("money-chart", {
+    type: "line",
+    data: {
+      labels: moneyValuesX,
+      datasets: [{
+        backgroundColor:"rgba(0,0,255,1.0)",
+        borderColor: "rgba(0,0,255,0.1)",
+        pointRadius: 5,
+        pointBorderColor: "black",
+        pointBackgroundColor: "red", 
+        data: moneyValueY
+      }]
+    },
+    options:{}
+  });
+
+const moneyChartUpdate = () => {
+    moneyChart.data.labels = moneyValuesX;
+    moneyChart.data.datasets[0].data = moneyValueY;
+    moneyChart.update();
+}
 
 let allPeopleShown = false;
 let allBusinessesShown = false;
 
+const getRandomNumber = (minInclusive, maxExclusive) => {
+    return Math.floor(Math.random() * (maxExclusive - minInclusive) + minInclusive);
+}
+
 class Person{
     constructor(){
-        this.id = Math.floor(Math.random() * 100) + 1,
+        this.id = getRandomNumber(1, 1000000),
         this.name = this.generateRandomName(),
-        this.age = Math.floor(Math.random() * 100) + 1,
+        this.age = getRandomNumber(14, 100),
         this.job = this.generateRandomJob(),
-        this.totalMoney = Math.floor(Math.random() * (1000000 - 10000 + 1)) + 10000,
-        this.yearIncome = Math.floor(Math.random() * (100000 - 15000 + 1)) + 15000,
+        this.totalMoney = getRandomNumber(100, 1000),
+        this.yearIncome = getRandomNumber(15000, 25000),
         this.ownedBusinesses = 0
-        this.happiness = Math.floor(Math.random() * (100 - 20 + 1)) + 20;
+        this.happiness = getRandomNumber(20, 100);
     }
 
     generateRandomName(){
@@ -83,10 +111,10 @@ class Person{
 
 }
 class Business{
-    constructor(){
+    constructor(ownerId){
         this.id = Math.floor(Math.random() * 100) + 1,
         this.name = this.generateRandomName(),
-        this.ownerId = 0,
+        this.ownerId = ownerId,
         this.productsAmount = Math.floor(Math.random() * 1000) + 1,
         this.totalMoney = Math.floor(Math.random() * (1000000 - 1000 + 1)) + 1000
     }
@@ -167,7 +195,21 @@ class Economics{
             this.addPerson(person);
         }
         for(let i = 0; i<businessBorn; i++){
-            const business = new Business();
+            let ownerIds = [];
+            for(let person of this.people){
+                ownerIds.push(person.id);
+                console.log(ownerIds);
+            }
+            let minPersonIdx = 0;
+            let maxPersonIdx = ownerIds.length - 1;
+            let ownerIdIdx = getRandomNumber(minPersonIdx, maxPersonIdx + 1);
+            let ownerId = ownerIds[ownerIdIdx];
+            const business = new Business(ownerId);
+            for(let person of this.people){
+                if(person.id === ownerId){
+                    person.ownedBusinesses++;
+                }
+            }
             this.addBusiness(business);
         }
         for(let person of this.people){
@@ -179,6 +221,8 @@ class Economics{
             business.produce(Math.floor(Math.random() * 100) + 1)
             business.earnMoney(business.totalMoney*0.1);
         }
+        moneyValuesX.push(this.cycle);
+        moneyValueY.push(this.people.length)
         return {
             peopleBorn: peopleBorn,
             businessBorn: businessBorn,
@@ -197,13 +241,12 @@ class Economics{
         const pPeopleBorn = document.createElement('p');
         const pBusinessesBorn = document.createElement('p');
         const pEconomicsCycle = document.createElement('p');
-        pTotalMoney.innerText = `Total amount of money: ${this.totalMoney.toLocaleString('de-DE')}`;
-        pTotalPeople.innerText = `Total amount of people: ${this.people.length}`;
-        pTotalBusinesses.innerText = `Total amount of businesses: ${this.businesses.length}`;
-        pPeopleBorn.innerText = `People born in this cycle: ${cycleResults.peopleBorn}`;
-        pBusinessesBorn.innerHTML = `Businesses born in this cycle: ${cycleResults.businessBorn}`;
-        pEconomicsCycle.innerHTML = `Current economics cycle: ${cycleResults.economicsCycle}`;
-
+        pTotalMoney.innerHTML = `<strong>Total amount of money:</strong> ${this.totalMoney.toLocaleString('de-DE')}`;
+        pTotalPeople.innerHTML = `<strong>Total amount of people:</strong> ${this.people.length}`;
+        pTotalBusinesses.innerHTML = `<strong>Total amount of businesses:</strong> ${this.businesses.length}`;
+        pPeopleBorn.innerHTML = `<strong>People born in this cycle:</strong> ${cycleResults.peopleBorn}`;
+        pBusinessesBorn.innerHTML = `<strong>Businesses born in this cycle:</strong> ${cycleResults.businessBorn}`;
+        pEconomicsCycle.innerHTML = `<strong>Current economics cycle:</strong> ${cycleResults.economicsCycle}`;
         sectionCycle.appendChild(pTotalMoney);
         sectionCycle.appendChild(pTotalPeople);
         sectionCycle.appendChild(pTotalBusinesses);
@@ -222,6 +265,7 @@ buttonRunCycle.addEventListener('click', () => {
     economics.render(cycleResults);
     allPeopleShown = false;
     allBusinessesShown = false;
+    moneyChartUpdate();
 });
 
 let economicCycleInterval;
@@ -231,6 +275,8 @@ buttonStartTimerCycle.addEventListener('click', () => {
             buttonStartTimerCycle.textContent = 'Pause cycle';
             const cycleResults = economics.runCycle();
             economics.render(cycleResults);
+            moneyChartUpdate();
+
         }, 1500)
     } else if(economicCycleInterval){
         buttonStartTimerCycle.textContent = 'Continue cycle';
@@ -245,6 +291,11 @@ buttonResetEconomics.addEventListener('click', () => {
     buttonStartTimerCycle.textContent = 'Start new economics cycle';
     clearInterval(economicCycleInterval);
     economicCycleInterval = null;
+    moneyValueX = [];
+    moneyValueY = [];
+    moneyChart.options.scales.y.min = 0;  
+    moneyChart.options.scales.y.max = 10;
+    moneyChartUpdate();
 })
 const renderAllBusinesses = () => {
     if(allBusinessesShown === false){
@@ -305,12 +356,18 @@ const getBusinessInfo = (business) => {
     const ownerIdLi = document.createElement('li');    
     const productsAmount = document.createElement('li');    
     const totalMoney = document.createElement('li');    
-    
+    let ownerName;
+    for(let person of economics.people){
+        if(person.id === business.ownerId){
+            ownerName = person.name;
+        }
+    }
+
     idLi.textContent = `Id: ${business.id}`;
     nameLi.textContent = `Name: ${business.name}`;
-    ownerIdLi.textContent = `Owner: ${business.ownerId}`;
+    ownerIdLi.textContent = `Owner: ${ownerName}`;
     productsAmount.textContent = `Total products amount: ${business.productsAmount.toLocaleString('de-DE')}`;
-    totalMoney.textContent = `Total money amount: \$${Math.round(business.totalMoney.toLocaleString('de-DE'))}`;
+    totalMoney.textContent = `Total money amount: \$${Math.round(business.totalMoney).toLocaleString('de-DE')}`;
     
     // ulBusinessInfo.appendChild(idLi);
     ulBusinessInfo.appendChild(nameLi);
@@ -354,3 +411,4 @@ const getPersonInfo = (person) => {
 buttonShowAllPeople.addEventListener('click', renderAllPeople)
 buttonShowAllBusinesses.addEventListener('click', renderAllBusinesses)
 
+// ------------------------------------------------------------------------
