@@ -1,6 +1,6 @@
 
 body {
-    font-family: "Montserrat";
+    font-family: "Lexend";
     background-color: #f4f4f4;
     color: #333;
     margin: 0;
@@ -86,16 +86,59 @@ button:hover {
         width: 90%;
     }
 }
-#money-chart {
-    width: 80% !important; /* Control width */
-    margin: 30px auto;
-    max-width: 600px; /* Limit max width */
-    height: 300px !important; /* Fix height */
-    display: block;
-    background-color: #f4f4f4; /* Light gray background */
-    border-radius: 10px; /* Rounded edges */
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); /* Add shadow effect */
-    padding: 10px; /* Inner spacing */
+
+.overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex; justify-content: center; align-items: center;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.3s;
+    z-index: 1000;
+  }
+  .overlay.visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  
+
+  .modal {
+    background: white;
+    padding: 30px 40px;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+    max-width: 500px;
+    width: 90%;
+    text-align: center;
+    font-family: "Montserrat", sans-serif;
+    animation: fadeIn 0.3s ease;
 }
 
+.modal ul {
+    padding: 0;
+    margin: 20px 0;
+    list-style: none;
+}
 
+.modal li {
+    background: #f0f0f0;
+    margin: 8px 0;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    text-align: left;
+}
+
+/* Optional: modal fade-in animation */
+@keyframes fadeIn {
+    from {
+        transform: scale(0.95);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+  

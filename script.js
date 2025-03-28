@@ -80,85 +80,18 @@ buttonResetEconomics.addEventListener('click', () => {
     // moneyChart.options.scales.y.max = 10;
     // moneyChartUpdate();
 })
-const getBusinessInfo = (business) => {
-    const divBusinessInfo = document.createElement('div');
-    const ulBusinessInfo = document.createElement('ul');
-    
-    const idLi = document.createElement('li');
-    const nameLi = document.createElement('li');    
-    const ownerIdLi = document.createElement('li');    
-    const productsAmount = document.createElement('li');    
-    const totalMoney = document.createElement('li');    
-    let ownerName;
-    for(let person of economics.people){
-        if(person.id === business.ownerId){
-            ownerName = person.name;
-        }
-    }
 
-    idLi.textContent = `Id: ${business.id}`;
-    nameLi.textContent = `Name: ${business.name}`;
-    ownerIdLi.textContent = `Owner: ${ownerName}`;
-    productsAmount.textContent = `Total products amount: ${business.productsAmount.toLocaleString('de-DE')}`;
-    totalMoney.textContent = `Total money amount: \$${Math.round(business.totalMoney).toLocaleString('de-DE')}`;
-    
-    // ulBusinessInfo.appendChild(idLi);
-    ulBusinessInfo.appendChild(nameLi);
-    ulBusinessInfo.appendChild(ownerIdLi);
-    ulBusinessInfo.appendChild(productsAmount);
-    ulBusinessInfo.appendChild(totalMoney);
-    divBusinessInfo.appendChild(ulBusinessInfo);
-    return divBusinessInfo;
-}
-const getPersonInfo = (person) => {
-    const divPersonInfo = document.createElement('div');
-    const ulPersonInfo = document.createElement('ul');
-
-    const idLi = document.createElement('li');
-    const jobLi = document.createElement('li');    
-    const totalMoneyLi = document.createElement('li');    
-    const yearIncomeLi = document.createElement('li');    
-    const ownedBusinessesLi = document.createElement('li');    
-    const happinessLi = document.createElement('li');    
-
-    idLi.textContent = `Id: ${person.id}`;
-    jobLi.textContent = `Name: ${person.name}`;
-    totalMoneyLi.textContent = `Total amount of money: \$${Math.round(person.totalMoney).toLocaleString('de-DE')}`;
-    yearIncomeLi.textContent = `Annual income: \$${person.yearIncome.toLocaleString('de-DE')}`;
-    ownedBusinessesLi.textContent = `Amount of owned businesses: ${person.ownedBusinesses}`;
-    happinessLi.textContent = `Happiness: ${person.happiness}`;
-    
-    // ulPersonInfo.appendChild(idLi);
-    ulPersonInfo.appendChild(jobLi);
-    ulPersonInfo.appendChild(totalMoneyLi);
-    ulPersonInfo.appendChild(yearIncomeLi);
-    ulPersonInfo.appendChild(ownedBusinessesLi);
-    ulPersonInfo.appendChild(happinessLi);
-    divPersonInfo.appendChild(ulPersonInfo);
-    return divPersonInfo;
-}
 
 const renderAllBusinesses = () => {
     if(allBusinessesShown === false){
         const sectionBusinesses = document.createElement('section');
+        sectionBusinesses.id = 'section-business';
         const divEconomics = document.getElementById('div-economics');
         divEconomics.appendChild(sectionBusinesses);
         const ulBusilesses = document.createElement('ul');
         sectionBusinesses.appendChild(ulBusilesses);
         for(let business of economics.businesses){
-            const businessLi = document.createElement('li');
-            businessLi.textContent = business.name;
-            ulBusilesses.appendChild(businessLi);
-            businessLi.addEventListener('click', () => {
-                let existingInfo = businessLi.querySelector('.business-info');
-                if(!existingInfo){
-                    const businessInfoDiv = getBusinessInfo(business);
-                    businessInfoDiv.classList.add('business-info');
-                    businessLi.appendChild(businessInfoDiv);
-                } else {
-                    existingInfo.remove();
-                }                
-                })
+            business.printBusinessData(ulBusilesses, economics)
         }
         allBusinessesShown = true;
     }
@@ -166,31 +99,18 @@ const renderAllBusinesses = () => {
 const renderAllPeople = () => {
     if(allPeopleShown === false){
         const sectionPeople = document.createElement('section');
+        sectionPeople.id = 'section-people';
         const divEconomics = document.getElementById('div-economics');
         divEconomics.appendChild(sectionPeople);
         const ulPeople = document.createElement('ul');
         sectionPeople.appendChild(ulPeople);
         for(let person of economics.people){
-        const personLi = document.createElement('li');
-        personLi.textContent = person.name;
-        ulPeople.appendChild(personLi);
-        personLi.addEventListener('click', () => {
-            let existingInfo = personLi.querySelector('.person-info');
-            if(!existingInfo){
-                const personInfoDiv = getPersonInfo(person);
-                personInfoDiv.classList.add('person-info');
-                personLi.appendChild(personInfoDiv);
-            } else {
-                existingInfo.remove();
-            }                
-            })
+            person.printPersonData(ulPeople);
         }
         allPeopleShown = true;
     }
 }
 
-
-// add button for running multiple cycles at a time
 
 buttonShowAllPeople.addEventListener('click', renderAllPeople)
 buttonShowAllBusinesses.addEventListener('click', renderAllBusinesses)
