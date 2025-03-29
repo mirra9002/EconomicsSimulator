@@ -119,7 +119,7 @@ const rendereAllTransactions = () => {
             if(transaction.cycle === economics.cycle){
                 const transactionLi = document.createElement('li');
                 // transactionLi.textContent = `Business: ${transaction.business}, person: ${transaction.person}, price: ${transaction.price}`;
-                transactionLi.innerHTML = `<b>${transaction.person}</b> has bought <b>${transaction.itemsAmount}</b> items for <b>$${transaction.price}</b> from <b>${transaction.business}</b></b>`
+                transactionLi.innerHTML = `<b>${transaction.person}</b> has bought <b>${transaction.itemsAmount}</b> items from <b>'${transaction.business}'</b> for <b>$${transaction.price}</b>`
                 ulTransactions.appendChild(transactionLi)
             }
         }
