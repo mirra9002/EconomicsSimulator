@@ -48,8 +48,7 @@ export class Person{
     }
 
     die(){
-        console.log(`Person ${this.id}: ${this.name} has passed away`);
-        return null;
+        this.id = null;
     }
 
     increaseAge(){
@@ -78,11 +77,6 @@ export class Person{
 
     editHappiess(amount){
         this.happiness = this.happiness + amount;
-        if(amount >= 0){
-            console.log(`Person ${this.id}: ${this.name} became happier on ${amount}. Current happiness: ${this.happiness}`);
-        } else{
-            console.log(`Person ${this.id}: ${this.name} became more sad on ${amount}. Current happiness: ${this.happiness}`);
-        }
     }
 
     printPersonData(ulPeople){
@@ -108,6 +102,7 @@ export class Person{
 
         const idLi = document.createElement('li');
         const nameLi = document.createElement('li');    
+        const ageLi = document.createElement('li');
         const jobLi = document.createElement('li');
         const totalMoneyLi = document.createElement('li');    
         const yearIncomeLi = document.createElement('li');    
@@ -117,6 +112,7 @@ export class Person{
 
         idLi.textContent = `Id: ${this.id}`;
         nameLi.textContent = `Name: ${this.name}`;
+        ageLi.textContent = `Age: ${this.age}`;
         jobLi.textContent = `Job: ${this.job}`;
         totalMoneyLi.textContent = `Total amount of money: \$${Math.round(this.totalMoney).toLocaleString('de-DE')}`;
         yearIncomeLi.textContent = `Annual income: \$${this.yearIncome.toLocaleString('de-DE')}`;
@@ -125,6 +121,7 @@ export class Person{
         checkPersonHistory.innerHTML = `<i> - Check person's info - </i>`
         
         ulPersonInfo.appendChild(nameLi);
+        ulPersonInfo.appendChild(ageLi);
         ulPersonInfo.appendChild(jobLi)
         ulPersonInfo.appendChild(totalMoneyLi);
         ulPersonInfo.appendChild(yearIncomeLi);
@@ -145,15 +142,18 @@ export class Person{
         const nameLi = document.createElement('li');
         const earnedMoneyLi = document.createElement('li');
         const transactionsLi = document.createElement('li');
+        const businessesLi = document.createElement('li');
+
         nameLi.textContent = `Name: ${this.name}`;
         earnedMoneyLi.textContent = `Total money earned: $${Math.round(this.totalMoney).toLocaleString('de-DE')}`;
             let transactionsFormatted = this.transactions.map(t => formatNumber(t));
         transactionsLi.textContent = `Transactions: ${transactionsFormatted.join('; ')}`;
-
+        businessesLi.textContent = `Businesses (ever owned): ${this.businesses.join('; ')}`;
 
         personHistoryUl.appendChild(nameLi)
         personHistoryUl.appendChild(earnedMoneyLi)
         personHistoryUl.appendChild(transactionsLi);
+        personHistoryUl.appendChild(businessesLi);
 
         
         const closeOverlayButton = document.createElement('button');

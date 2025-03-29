@@ -7,7 +7,7 @@ export class Business{
         this.ownerId = ownerId,
         this.productsAmount = getRandomNumber(1, 1000);
         this.totalMoney = getRandomNumber(1000, 1000000);
-        
+        this.productCost = getRandomNumber(1, 1000);
     }
 
     static generateRandomName(){
@@ -50,9 +50,21 @@ export class Business{
         console.log(`Business ${this.id}: ${this.name} has been sold to person with ID ${newOwnerId}`);
     }
 
+    sellProduct(person, amount, price){
+        if(person.totalMoney < price || this.productsAmount < amount){
+            return;
+        } else {
+            this.earnMoney(price);
+            this.productsAmount += amount;
+        }
+    }
+
+    calculateTotalMoney(){
+        return this.productCost * this.productsAmount;
+    }
+
     earnMoney(amount){
         this.totalMoney = this.totalMoney + amount;
-        console.log(`Business ${this.id}: ${this.name} has earned ${amount}. Current total money: ${this.totalMoney}`);
     }
 
     printBusinessData(ulBusilesses, economics){
@@ -78,28 +90,33 @@ export class Business{
         const idLi = document.createElement('li');
         const nameLi = document.createElement('li');    
         const ownerIdLi = document.createElement('li');    
-        const productsAmount = document.createElement('li');    
-        const totalMoney = document.createElement('li');    
+        const productsAmountLi = document.createElement('li');    
+        const totalMoneyLi = document.createElement('li');   
+        const productCostLi = document.createElement('li');
         let ownerName;
         for(let person of economics.people){
             if(person.id === this.ownerId){;
                 ownerName = person.name;
                 person.totalMoney = this.totalMoney
+                person.job = 'Businessman'
+                person.businesses.push(this.name)
             }
         }
 
         idLi.textContent = `Id: ${this.id}`;
         nameLi.textContent = `Name: ${this.name}`;
         ownerIdLi.textContent = `Owner: ${ownerName}`;
-        productsAmount.textContent = `Total products amount: ${this.productsAmount.toLocaleString('de-DE')}`;
-        totalMoney.textContent = `Total money amount: \$${Math.round(this.totalMoney).toLocaleString('de-DE')}`;
+        productsAmountLi.textContent = `Total products amount: ${this.productsAmount.toLocaleString('de-DE')}`;
+        totalMoneyLi.textContent = `Total money amount: $${Math.round(this.totalMoney).toLocaleString('de-DE')}`;
+        productCostLi.textContent = `Average product cost: $${this.productCost}`
         
         // ulBusinessInfo.appendChild(idLi);
         ulBusinessInfo.appendChild(nameLi);
         ulBusinessInfo.appendChild(ownerIdLi);
-        ulBusinessInfo.appendChild(productsAmount);
-        ulBusinessInfo.appendChild(totalMoney);
+        ulBusinessInfo.appendChild(productsAmountLi);
+        ulBusinessInfo.appendChild(totalMoneyLi);
         divBusinessInfo.appendChild(ulBusinessInfo);
+        divBusinessInfo.appendChild(productCostLi);
         return divBusinessInfo;
     }
 }

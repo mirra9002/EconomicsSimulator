@@ -10,6 +10,7 @@ export class Economics{
         this.totalMoney = 0;
         this.inflationRate = 1.02;
         this.cycle = cycle;
+        this.deals = [];
     }
 
     addPerson(person){
@@ -26,8 +27,8 @@ export class Economics{
 
     runCycle(){
         this.cycle++;
-        const peopleBorn = Math.floor(Math.random() * 10) + 1;
-        const businessBorn = Math.floor(Math.random() * 2) + 1
+        const peopleBorn = getRandomNumber(1, 11);
+        const businessBorn = getRandomNumber(1, 3);
         for(let i = 0; i<peopleBorn; i++){
             const person = new Person();
             this.addPerson(person);
@@ -54,20 +55,36 @@ export class Economics{
             person.increaseAge();
             person.increaseIncome();
             person.earnMoney(person.yearIncome)
-            person.spendMoney(Math.floor(person.yearIncome*getRandomFloat(0.4, 0.9)))
+            for(let b of this.businesses){
+                const productsBought = getRandomNumber(1, 11);
+                if(person.totalMoney*0.9 > b.productCost*productsBought){
+                    person.spendMoney(b.productCost*productsBought);
+                    b.sellProduct(person,productsBought, productsBought*b.productCost);
+                    const deal = {
+                        business: b.name,
+                        person: person.name,
+                        price: b.productCost*productsBought,
+                        itemsAmount: productsBought,
+                        cycle: this.cycle
+                    }
+                    this.deals.push(deal);
+                    console.log(deal);
+                }
+                
+            }
         }
         for(let business of this.businesses){
             business.produce(Math.floor(Math.random() * 100) + 1)
-            business.earnMoney(business.totalMoney*0.1);
+            business.totalMoney = business.calculateTotalMoney();
         }
-        // moneyValuesX.push(this.cycle);
-        // moneyValueY.push(this.people.length)
+
         return {
             peopleBorn: peopleBorn,
             businessBorn: businessBorn,
             economicsCycle: this.cycle
         }
     }
+
 
     render(cycleResults){
         const divEconomics = document.getElementById('div-economics');

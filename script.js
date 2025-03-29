@@ -3,52 +3,32 @@ const buttonStartTimerCycle = document.getElementById('btn-timer-cycle');
 const buttonResetEconomics = document.getElementById('btn-reset-economics')
 const buttonShowAllPeople = document.getElementById('btn-show-all-people');
 const buttonShowAllBusinesses = document.getElementById('btn-show-all-businesses');
-let moneyValuesX = [];
-let moneyValueY = [];
+const buttonShowAllTransactions = document.getElementById('btn-show-transactions');
 
 
 import { Economics } from "./classes/economics.js";
 import { Person } from "./classes/person.js";
 import { Business } from "./classes/business.js";
 
-
-
 let economics = new Economics([], [], 0);
 economics.render({});
 
-// let moneyChart = new Chart("money-chart", {
-//     type: "line",
-//     data: {
-//       labels: moneyValuesX,
-//       datasets: [{
-//         backgroundColor:"rgba(0,0,255,1.0)",
-//         borderColor: "rgba(0,0,255,0.1)",
-//         pointRadius: 5,
-//         pointBorderColor: "black",
-//         pointBackgroundColor: "red", 
-//         data: moneyValueY
-//       }]
-//     },
-//     options:{}
-//   });
-
-// const moneyChartUpdate = () => {
-//     moneyChart.data.labels = moneyValuesX;
-//     moneyChart.data.datasets[0].data = moneyValueY;
-//     moneyChart.update();
-// }
-
 let allPeopleShown = false;
+let sectionPeople;
 let allBusinessesShown = false;
-
-
+let sectionBusinesses;
+let transactionsShown = false;
+let sectionTransactions;
 
 buttonRunCycle.addEventListener('click', () => {
     const cycleResults = economics.runCycle();
     economics.render(cycleResults);
     allPeopleShown = false;
     allBusinessesShown = false;
-    // moneyChartUpdate();
+    transactionsShown = false;
+    buttonShowAllPeople.textContent = 'Show All People'
+    buttonShowAllBusinesses.textContent = 'Show All Businesses'
+    buttonShowAllTransactions.textContent = 'Show All Transactions'
 });
 
 let economicCycleInterval;
@@ -74,18 +54,21 @@ buttonResetEconomics.addEventListener('click', () => {
     buttonStartTimerCycle.textContent = 'Start new economics cycle';
     clearInterval(economicCycleInterval);
     economicCycleInterval = null;
-    // moneyValueX = [];
-    // moneyValueY = [];
-    // moneyChart.options.scales.y.min = 0;  
-    // moneyChart.options.scales.y.max = 10;
-    // moneyChartUpdate();
+    allPeopleShown = false;
+    allBusinessesShown = false;
+    transactionsShown = false;
+    buttonShowAllPeople.textContent = 'Show All People'
+    buttonShowAllBusinesses.textContent = 'Show All Businesses'
+    buttonShowAllTransactions.textContent = 'Show All Transactions'
 })
-
 
 const renderAllBusinesses = () => {
     if(allBusinessesShown === false){
-        const sectionBusinesses = document.createElement('section');
+        sectionBusinesses = document.createElement('section');
         sectionBusinesses.id = 'section-business';
+        const sectionTitle = document.createElement('h2');
+        sectionTitle.textContent = 'Businesses'
+        sectionBusinesses.append(sectionTitle)
         const divEconomics = document.getElementById('div-economics');
         divEconomics.appendChild(sectionBusinesses);
         const ulBusilesses = document.createElement('ul');
@@ -94,12 +77,20 @@ const renderAllBusinesses = () => {
             business.printBusinessData(ulBusilesses, economics)
         }
         allBusinessesShown = true;
+        buttonShowAllBusinesses.textContent = 'Hide All Businesses';
+    } else {
+        sectionBusinesses.remove();
+        allBusinessesShown = false
+        buttonShowAllBusinesses.textContent = 'Show All Businesses';
     }
 }
 const renderAllPeople = () => {
     if(allPeopleShown === false){
-        const sectionPeople = document.createElement('section');
+        sectionPeople = document.createElement('section');
         sectionPeople.id = 'section-people';
+        const sectionTitle = document.createElement('h2');
+        sectionTitle.textContent = 'People'
+        sectionPeople.append(sectionTitle)
         const divEconomics = document.getElementById('div-economics');
         divEconomics.appendChild(sectionPeople);
         const ulPeople = document.createElement('ul');
@@ -108,10 +99,43 @@ const renderAllPeople = () => {
             person.printPersonData(ulPeople);
         }
         allPeopleShown = true;
+        buttonShowAllPeople.textContent = 'Hide All People';
+    } else {
+        sectionPeople.remove();
+        allPeopleShown = false;
+        buttonShowAllPeople.textContent = 'Show All Businesses';
     }
 }
 
+const rendereAllTransactions = () => {
+    if(!transactionsShown){
+        const divEconomics = document.getElementById('div-economics');
+        sectionTransactions = document.createElement('section');
+        const sectionTitle = document.createElement('h2');
+        sectionTransactions.id = 'section-transactions'
+        
+        const ulTransactions = document.createElement('ul');
+        for(let transaction of economics.deals){
+            if(transaction.cycle === economics.cycle){
+                const transactionLi = document.createElement('li');
+                // transactionLi.textContent = `Business: ${transaction.business}, person: ${transaction.person}, price: ${transaction.price}`;
+                transactionLi.innerHTML = `<b>${transaction.person}</b> has bought <b>${transaction.itemsAmount}</b> items for <b>$${transaction.price}</b> from <b>${transaction.business}</b></b>`
+                ulTransactions.appendChild(transactionLi)
+            }
+        }
+        sectionTitle.textContent = 'Transactions of this year'
+        sectionTransactions.append(sectionTitle)
+        sectionTransactions.append(ulTransactions)
+        divEconomics.append(sectionTransactions);
+        transactionsShown = true;
+        buttonShowAllTransactions.textContent = 'Hide All Transactions';
+    } else {
+        sectionTransactions.remove();
+        transactionsShown = false;
+        buttonShowAllTransactions.textContent = 'Show All Transactions';
+    }
+}
 
 buttonShowAllPeople.addEventListener('click', renderAllPeople)
-buttonShowAllBusinesses.addEventListener('click', renderAllBusinesses)
-
+buttonShowAllBusinesses.addEventListener('click', renderAllBusinesses);
+buttonShowAllTransactions.addEventListener('click', rendereAllTransactions)
