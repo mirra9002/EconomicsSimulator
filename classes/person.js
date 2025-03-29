@@ -1,4 +1,6 @@
 import { getRandomNumber } from "../utils.js";
+import { formatNumber } from "../utils.js";
+import { getRandomFloat } from "../utils.js";
 
 export class Person{
     constructor(){
@@ -13,6 +15,7 @@ export class Person{
         this.isAlive = true;
         this.transactions = [];
         this.jobs = [];
+        this.businesses = [];
     }
 
 
@@ -54,19 +57,23 @@ export class Person{
         console.log(`Person ${this.id}: ${this.name} has increased it's age. Current age: ${this.age}`);
     }
 
+    increaseIncome(){
+        this.yearIncome = Math.round(this.yearIncome*getRandomFloat(1, 1.2));
+    }
+
     earnMoney(amount){
         this.totalMoney = this.totalMoney + amount;
-        console.log(`Person ${this.id}: ${this.name} has earned ${amount}. Current total amount: ${this.totalMoney}`);
+        this.transactions.push(amount);
     }
 
     spendMoney(amount){
         this.totalMoney = this.totalMoney - amount;
-        console.log(`Person ${this.id}: ${this.name} has spent ${amount}. Current total amount: ${this.totalMoney}`); 
+        this.transactions.push(amount * (-1));
     }
 
     startBusiness(business){
         this.ownedBusinesses.push(business);
-        console.log(`Person ${this.id}: ${this.name} has started new business ${business}. Current businesses: ${this.ownedBusinesses}`);
+        this.businesses.push(business);
     }
 
     editHappiess(amount){
@@ -136,14 +143,17 @@ export class Person{
         const personHistoryUl = document.createElement('ul');
         
         const nameLi = document.createElement('li');
-        const earnedMoney = document.createElement('li');
+        const earnedMoneyLi = document.createElement('li');
+        const transactionsLi = document.createElement('li');
         nameLi.textContent = `Name: ${this.name}`;
-        console.log(nameLi.textContent);
-        earnedMoney.textContent = `Total money earned: $${Math.round(this.totalMoney).toLocaleString('de-DE')}`;
+        earnedMoneyLi.textContent = `Total money earned: $${Math.round(this.totalMoney).toLocaleString('de-DE')}`;
+            let transactionsFormatted = this.transactions.map(t => formatNumber(t));
+        transactionsLi.textContent = `Transactions: ${transactionsFormatted.join('; ')}`;
 
 
         personHistoryUl.appendChild(nameLi)
-        personHistoryUl.appendChild(earnedMoney)
+        personHistoryUl.appendChild(earnedMoneyLi)
+        personHistoryUl.appendChild(transactionsLi);
 
         
         const closeOverlayButton = document.createElement('button');

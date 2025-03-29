@@ -1,6 +1,8 @@
 import { Person } from "./person.js";
 import { Business } from "./business.js";
 import { getRandomNumber } from "../utils.js";
+import { getRandomFloat } from "../utils.js";
+
 export class Economics{
     constructor(people, businesses, cycle){
         this.people = people,
@@ -50,8 +52,9 @@ export class Economics{
         }
         for(let person of this.people){
             person.increaseAge();
+            person.increaseIncome();
             person.earnMoney(person.yearIncome)
-            person.spendMoney(person.yearIncome*0.8)
+            person.spendMoney(Math.floor(person.yearIncome*getRandomFloat(0.4, 0.9)))
         }
         for(let business of this.businesses){
             business.produce(Math.floor(Math.random() * 100) + 1)
